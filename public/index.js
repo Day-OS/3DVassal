@@ -1,16 +1,34 @@
 // Simple three.js example
-
+import * as CANNON from "https://pmndrs.github.io/cannon-es/dist/cannon-es.js"
 import * as THREE from "https://threejs.org/build/three.module.js";
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 import { OBJLoader } from "https://threejs.org/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "https://threejs.org/examples/jsm/loaders/MTLLoader.js";
 
 var mesh, renderer, scene, camera, controls;
+var cursor, floor;
+
+const timeStep = 1 / 60 // seconds
+let lastCallTime 
+const world = new CANNON.World({
+    gravity: new CANNON.Vec3(0,-10,0),
+    broadphase: new CANNON.NaiveBroadphase(),
+    iterations: 10
+});
+
+var body = new CANNON.Body({mass:1})
+body.addShape(new CANNON.Box(new CANNON.Vec3(1,0.2,1)));
+world.addBody(body)
+
+floor = new CANNON.Body({mass:0})
+body.addShape(new CANNON.Box(new CANNON.Vec3(10,0.2,10)));
+world.addBody(body)
 
 init();
 animate();
 
 function init() {
+    
     // renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -52,33 +70,33 @@ function init() {
     scene.add( new THREE.GridHelper( 20 ) );
 
     // geometry
-    var geometry = new THREE.SphereGeometry( 5, 12, 8 );
+    var geometry = new THREE.BoxGeometry( 10, 0.2, 10 );
     
     // material
     var material = new THREE.MeshPhongMaterial( {
         color: 0x00ffff, 
         flatShading: true,
         transparent: true,
-        opacity: 0.7,
+        opacity: 0.9,
     } );
     
     // mesh
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
+    mesh.position.y = -1
 
-
+    
     
     const mtl = new MTLLoader();
     mtl.setPath("../models/")
     mtl.load("mouse.mtl", (mtl) =>{
-        console.log(mtl);
         mtl.preload()
-        //V -- dando ruim
         const objloader = new OBJLoader();
         objloader.setMaterials(mtl)
         objloader.setPath("../models/")
         objloader.load("mouse.obj", (obj)=> {
             scene.add(obj)
+            cursor = obj
         });
     });
     
@@ -86,13 +104,22 @@ function init() {
     //objloader.setPath("")
     
 }
+function animate() {
+    controls.update()
+    requestAnimationFrame( animate );
+    console.log(body.position);
+    cursor.position.copy(body.position)
 
-    function animate() {
-        controls.update()
-        requestAnimationFrame( animate );
-        
-        //controls.update();
-
-        renderer.render( scene, camera );
-
+    
+    const time = performance.now() / 1000 // seconds
+    if (!lastCallTime) {
+        world.step(timeStep)
+    } else {
+        const dt = time - lastCallTime
+        world.step(timeStep, dt)
     }
+    lastCallTime = time
+
+    renderer.render( scene, camera );
+
+}
