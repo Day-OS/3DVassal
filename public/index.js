@@ -11,18 +11,20 @@ var cursor, floor;
 const timeStep = 1 / 60 // seconds
 let lastCallTime 
 const world = new CANNON.World({
-    gravity: new CANNON.Vec3(0,-10,0),
-    broadphase: new CANNON.NaiveBroadphase(),
-    iterations: 10
+    gravity: new CANNON.Vec3(0,-9.82,0),
+    //broadphase: new CANNON.NaiveBroadphase(),
+    iterations: 10,
 });
+world.solver.iterations = 10;
+
 
 var body = new CANNON.Body({mass:1})
-body.addShape(new CANNON.Box(new CANNON.Vec3(1,0.2,1)));
+body.addShape(new CANNON.Box(new CANNON.Vec3(1,0.05,1)));
 world.addBody(body)
 
 floor = new CANNON.Body({mass:0})
-body.addShape(new CANNON.Box(new CANNON.Vec3(10,0.2,10)));
-world.addBody(body)
+floor.addShape(new CANNON.Box(new CANNON.Vec3(10,0.2,10)));
+world.addBody(floor)
 
 init();
 animate();
@@ -83,7 +85,7 @@ function init() {
     // mesh
     mesh = new THREE.Mesh( geometry, material );
     scene.add( mesh );
-    mesh.position.y = -1
+    floor.position.y = -1
 
     
     
@@ -107,9 +109,10 @@ function init() {
 function animate() {
     controls.update()
     requestAnimationFrame( animate );
-    console.log(body.position);
     cursor.position.copy(body.position)
-
+    cursor.quaternion.copy(body.quaternion)
+    mesh.position.copy(floor.position)
+    mesh.quaternion.copy(floor.quaternion)
     
     const time = performance.now() / 1000 // seconds
     if (!lastCallTime) {
