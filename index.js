@@ -1,10 +1,11 @@
-// Simple three.js example
-import * as CANNON from "https://pmndrs.github.io/cannon-es/dist/cannon-es.js"
-import * as THREE from "https://threejs.org/build/three.module.js";
-import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
-import { OBJLoader } from "https://threejs.org/examples/jsm/loaders/OBJLoader.js";
-import { MTLLoader } from "https://threejs.org/examples/jsm/loaders/MTLLoader.js";
+import * as THREE from 'three';
+import * as CANNON from "cannon-es"
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
+import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
+import CameraControls from 'camera-controls';
 
+CameraControls.install({THREE: THREE})
+const clock = new THREE.Clock();
 var mesh, renderer, scene, camera, controls;
 var cursor, floor;
 
@@ -21,6 +22,7 @@ world.solver.iterations = 10;
 var body = new CANNON.Body({mass:1})
 body.addShape(new CANNON.Box(new CANNON.Vec3(1,0.05,1)));
 world.addBody(body)
+body.position.y = 10
 
 floor = new CANNON.Body({mass:0})
 floor.addShape(new CANNON.Box(new CANNON.Vec3(10,0.2,10)));
@@ -45,19 +47,7 @@ function init() {
     camera.position.set( 20, 20, 20 );
 
     // controls
-    controls = new OrbitControls( camera, renderer.domElement );
-    controls.listenToKeyEvents( window ); // optional
-    controls.enableDamping = true;
-    controls.dampingFactor = 1.2;
-
-    controls.keys = {
-        LEFT: 'KeyA', //left arrow
-        UP: 'KeyW', // up arrow
-        RIGHT: 'KeyD', // right arrow
-        BOTTOM: 'KeyS' // down arrow
-    }
-    controls.keyPanSpeed = 20;
-
+    controls = new CameraControls( camera, renderer.domElement );
     
     // ambient
     scene.add( new THREE.AmbientLight( 0x222222 ) );
@@ -87,8 +77,7 @@ function init() {
     scene.add( mesh );
     floor.position.y = -1
 
-    
-    
+
     const mtl = new MTLLoader();
     mtl.setPath("../models/")
     mtl.load("mouse.mtl", (mtl) =>{
@@ -106,13 +95,22 @@ function init() {
     //objloader.setPath("")
     
 }
+
 function animate() {
-    controls.update()
+    const delta = clock.getDelta();
+    const hasControlsUpdated = controls.update( delta );
+
     requestAnimationFrame( animate );
-    cursor.position.copy(body.position)
-    cursor.quaternion.copy(body.quaternion)
-    mesh.position.copy(floor.position)
-    mesh.quaternion.copy(floor.quaternion)
+    if(cursor){
+        cursor.position.copy(body.position)
+        cursor.quaternion.copy(body.quaternion)
+    }
+    
+   
+    if (mesh){
+        mesh.position.copy(floor.position)
+        mesh.quaternion.copy(floor.quaternion)
+    }
     
     const time = performance.now() / 1000 // seconds
     if (!lastCallTime) {
@@ -123,6 +121,8 @@ function animate() {
     }
     lastCallTime = time
 
+
     renderer.render( scene, camera );
+    //if ( hasControlsUpdated ) {}
 
 }
