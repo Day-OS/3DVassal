@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "auto": "webpack --watch",
     "build": "webpack --config webpack.config.js",
     "start": "node ./bin/www"
   },
@@ -12,6 +13,7 @@
     "buffer": "^6.0.3",
     "camera-controls": "^1.29.1",
     "cannon-es": "^0.18.0",
+    "cannon-es-debugger": "^0.1.4",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",

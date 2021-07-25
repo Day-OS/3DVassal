@@ -3,6 +3,8 @@ import * as CANNON from "cannon-es"
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import CameraControls from 'camera-controls';
+import  cannonDebugger from 'cannon-es-debugger';
+import Entity from './entity.js'
 
 CameraControls.install({THREE: THREE})
 const clock = new THREE.Clock();
@@ -24,15 +26,11 @@ body.addShape(new CANNON.Box(new CANNON.Vec3(1,0.05,1)));
 world.addBody(body)
 body.position.y = 10
 
-floor = new CANNON.Body({mass:0})
-floor.addShape(new CANNON.Box(new CANNON.Vec3(10,0.2,10)));
-world.addBody(floor)
 
 init();
 animate();
 
 function init() {
-    
     // renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -41,6 +39,7 @@ function init() {
 
     // scene
     scene = new THREE.Scene();
+    //cannonDebugger(scene, world.bodies)
     
     // camera
     camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -48,7 +47,8 @@ function init() {
 
     // controls
     controls = new CameraControls( camera, renderer.domElement );
-    
+    controls.mouseButtons.left = CameraControls.ACTION.NONE
+    controls.mouseButtons.right = CameraControls.ACTION.ROTATE;
     // ambient
     scene.add( new THREE.AmbientLight( 0x222222 ) );
     
@@ -61,26 +61,11 @@ function init() {
     scene.add( new THREE.AxesHelper( 20 ) );
     scene.add( new THREE.GridHelper( 20 ) );
 
-    // geometry
-    var geometry = new THREE.BoxGeometry( 10, 0.2, 10 );
-    
-    // material
-    var material = new THREE.MeshPhongMaterial( {
-        color: 0x00ffff, 
-        flatShading: true,
-        transparent: true,
-        opacity: 0.9,
-    } );
-    
-    // mesh
-    mesh = new THREE.Mesh( geometry, material );
-    scene.add( mesh );
-    floor.position.y = -1
-
+    floor = new Entity(scene, world,0, {x:20,y:1,z:20})
+    floor.Physic.position.y = -0.5
 
     const mtl = new MTLLoader();
-    mtl.setPath("../models/")
-    mtl.load("mouse.mtl", (mtl) =>{
+    mtl.load("../models/mouse.mtl", (mtl) =>{
         mtl.preload()
         const objloader = new OBJLoader();
         objloader.setMaterials(mtl)
@@ -106,12 +91,7 @@ function animate() {
         cursor.quaternion.copy(body.quaternion)
     }
     
-   
-    if (mesh){
-        mesh.position.copy(floor.position)
-        mesh.quaternion.copy(floor.quaternion)
-    }
-    
+    floor.update()
     const time = performance.now() / 1000 // seconds
     if (!lastCallTime) {
         world.step(timeStep)
