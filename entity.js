@@ -17,7 +17,7 @@ class Entity {
         }
         if (material == this.materialTypes.DEFAULTMATERIAL){
             material = new THREE.MeshPhongMaterial( {
-                color: 0x00ffff, 
+                color: 0xFFFFFF, 
                 flatShading: true,
                 transparent: true,
                 opacity: 0.9,

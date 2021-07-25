@@ -21,7 +21,7 @@ const world = new CANNON.World({
 world.solver.iterations = 10;
 
 
-var body = new CANNON.Body({mass:1})
+var body = new CANNON.Body({mass:0})
 body.addShape(new CANNON.Box(new CANNON.Vec3(1,0.05,1)));
 world.addBody(body)
 body.position.y = 10
@@ -39,7 +39,7 @@ function init() {
 
     // scene
     scene = new THREE.Scene();
-    //cannonDebugger(scene, world.bodies)
+    cannonDebugger(scene, world.bodies)
     
     // camera
     camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -63,6 +63,8 @@ function init() {
 
     floor = new Entity(scene, world,0, {x:20,y:1,z:20})
     floor.Physic.position.y = -0.5
+    console.log(floor.Mesh);
+    floor.Mesh.Color = new THREE.Color(0x0000FF )
 
     const mtl = new MTLLoader();
     mtl.load("../models/mouse.mtl", (mtl) =>{
@@ -87,6 +89,12 @@ function animate() {
 
     requestAnimationFrame( animate );
     if(cursor){
+
+        //Y = RODAR KKKKK
+        //onsole.log(body.quaternion);
+        body.quaternion.setFromAxisAngle(new CANNON.Vec3(0 , 1,0),camera.rotation.z)
+        console.log("camera: " + camera.quaternion.z + "\ncorpo: "+ " x: " + body.quaternion.x + " y: " + body.quaternion.y + " z: "+ body.quaternion.z + " w: "+ body.quaternion.w);
+        //body.quaternion.copy(new CANNON.Quaternion(0 , -camera.quaternion.y*2,0, (camera.quaternion.y/3) - 1))//.setFromVectors(new CANNON.Vec3(camera.rotation.x, 0, camera.rotation.z), new CANNON.Vec3(camera.rotation.x, 0, camera.rotation.z) );
         cursor.position.copy(body.position)
         cursor.quaternion.copy(body.quaternion)
     }
