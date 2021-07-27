@@ -13,7 +13,6 @@ module.exports = {
         __filename: false,
       },
     mode: "development",
-    //funciona, mas é sus...
     module: {
         rules: [
             {
@@ -22,18 +21,19 @@ module.exports = {
             use: {
                 loader: 'babel-loader',
                 options: {
-                presets: ['@babel/preset-env']
+                    presets: ['@babel/preset-env'],
+                    plugins: ['@babel/plugin-transform-runtime']    
                 }
             }
             }
         ],
     },
     
-    resolve:{
+/**    resolve:{
         fallback: { 
             "buffer": require.resolve("buffer"),
             "stream": require.resolve("stream-browserify") 
         }
-    }
+    } */
 };
 
