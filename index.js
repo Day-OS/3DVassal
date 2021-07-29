@@ -16,7 +16,7 @@ const timeStep = 1 / 60 // seconds
 let lastCallTime 
 const world = new CANNON.World({
     gravity: new CANNON.Vec3(0,-9.82,0),
-    //broadphase: new CANNON.NaiveBroadphase(),
+    broadphase: new CANNON.NaiveBroadphase(),
     iterations: 10,
 });
 world.solver.iterations = 10;
@@ -62,11 +62,12 @@ async function init() {
     // axes
     scene.add( new THREE.AxesHelper( 20 ) );
     scene.add( new THREE.GridHelper( 20 ) );
-    dado = new Entity(scene, world,0.02, {x:1,y:1,z:1},"../models/d20.gltf", "gltf", {x:0,y:1.5,z:0})
+    dado = new Entity(scene, world,1, {x:1,y:1,z:1},"../models/d20.gltf", "gltf")
+    dado2 = new Entity(scene, world,1, {x:1,y:1,z:1},"../models/d4.gltf", )
 
-    dado.changePosition(new CANNON.Vec3(0,10,0));
-    dado2 = new Entity(scene, world,0, {x:1,y:1,z:1},"../models/ywes.gltf", )
-    dado2.changePosition(new CANNON.Vec3(0,20,20));
+    dado.changePosition(new CANNON.Vec3(0,10,4));
+    
+    dado2.changePosition(new CANNON.Vec3(0,1,2));
     floor = new Entity(scene, world,0, {x:20,y:1,z:20})
     /**.then(()=>{
         console.log(floor);

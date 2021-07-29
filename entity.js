@@ -6,8 +6,6 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { threeToCannon, ShapeType } from 'three-to-cannon';
 
-
-
 class Entity {
     geometryTypes = {GLTF:"gltf", DEFAULTCUBE:"default"};
     materialTypes = {MTL:"obj", DEFAULTMATERIAL:"default"};
@@ -15,7 +13,6 @@ class Entity {
     Mesh = false;
     RotationOffset;
     constructor(scene, world, mass = 1, scale = {x: 1,y: 1,z:1}, geometry = "default", material = "default", rotationOffset = {x: 0,y: 0,z:0}){
-        //Physics "and not loaded model"
         this.RotationOffset = rotationOffset;
         (async()=>{
         var mesh,shape;
@@ -30,11 +27,25 @@ class Entity {
             gltf.setDRACOLoader(dracoLoader);
             geometry = await gltf.loadAsync(geometry)
             mesh = geometry.scene
+
+            if (mesh.constructor.name == "Group"){
+                for (let index = 0; index < mesh.children.length; index++) {
+                    const element = mesh.children[index];
+                    if (element.constructor.name == "Mesh") {
+                        mesh = element;
+                        console.log(mesh);
+                        break;
+                    }
+                    
+                    
+                }
+            }
+            console.log(mesh);
             shape = threeToCannon(mesh, {type: ShapeType.HULL}).shape
         }
         else{
             geometry = notLoadedModel;
-            if (material == this.materialTypes.DEFAULTMATERIAL){
+            if (true/**material == this.materialTypes.DEFAULTMATERIAL */){
                 material = new THREE.MeshPhongMaterial({
                     color: 0xFFFFFF, 
                     flatShading: true,
@@ -47,12 +58,11 @@ class Entity {
         }
 
 
-        console.log(shape)
         var body = new CANNON.Body({mass})
         body.addShape(shape);
         this.Physic = body
         this.Mesh = mesh
-        console.log(mesh);
+
 
         scene.add(this.Mesh);
         world.addBody(this.Physic);
