@@ -63,11 +63,11 @@ async function init() {
     scene.add( new THREE.AxesHelper( 20 ) );
     scene.add( new THREE.GridHelper( 20 ) );
     dado = new Entity(scene, world,1, {x:1,y:1,z:1},"../models/d20.gltf", "gltf")
-    dado2 = new Entity(scene, world,1, {x:1,y:1,z:1},"../models/d4.gltf", )
+    dado2 = new Entity(scene, world,1, {x:1,y:1,z:1},"../models/d20.gltf", )
 
-    dado.changePosition(new CANNON.Vec3(0,10,4));
+    dado.changePosition(new CANNON.Vec3(0,10,3));
     
-    dado2.changePosition(new CANNON.Vec3(0,1,2));
+    dado2.changePosition(new CANNON.Vec3(0,4,2));
     floor = new Entity(scene, world,0, {x:20,y:1,z:20})
     /**.then(()=>{
         console.log(floor);

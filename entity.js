@@ -5,6 +5,7 @@ import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { threeToCannon, ShapeType } from 'three-to-cannon';
+import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 class Entity {
     geometryTypes = {GLTF:"gltf", DEFAULTCUBE:"default"};
@@ -33,15 +34,37 @@ class Entity {
                     const element = mesh.children[index];
                     if (element.constructor.name == "Mesh") {
                         mesh = element;
-                        console.log(mesh);
                         break;
                     }
                     
                     
                 }
             }
-            console.log(mesh);
-            shape = threeToCannon(mesh, {type: ShapeType.HULL}).shape
+            console.log(mesh.geometry);
+            geometry = BufferGeometryUtils.mergeVertices(mesh.geometry)
+            console.log(geometry)
+            mesh.geometry = geometry
+            let position = geometry.attributes.position.array;  
+            let geomFaces = geometry.index.array; 
+            let normAttrib = geometry.attributes.normal;  
+            const points = [];  
+            const faces = []; 
+            const normals = []; 
+            for(var i = 0;i<position.length;i+=3){  
+              points.push(new CANNON.Vec3(position[i],position[i+1],position[i+2]));  
+            }  
+            for(var i = 0;i<geomFaces.length;i+=3){  
+              faces.push([geomFaces[i],geomFaces[i+1],geomFaces[i+2]]);  
+            }  
+            for ( let i=0 ; i<  normAttrib.count; i++ ) {
+                normals.push(new CANNON.Vec3(normAttrib.getX(i),normAttrib.getY(i),normAttrib.getZ(i)));
+            }
+            console.log(faces);
+            shape = new CANNON.ConvexPolyhedron({vertices:points,faces:faces, normals:normals}); 
+            console.log(shape);
+
+            //Remove here after physics gets solved VVVVVVV
+            //shape = threeToCannon(mesh, {type: ShapeType.BOX}).shape
         }
         else{
             geometry = notLoadedModel;

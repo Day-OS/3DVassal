@@ -28,6 +28,7 @@
     "source-map-loader": "^3.0.0",
     "stream-browserify": "^3.0.0",
     "three": "^0.130.1",
+    "three-mesh-bvh": "^0.4.1",
     "three-to-cannon": "^4.0.2",
     "url": "^0.11.0",
     "yarn": "^1.22.10"
@@ -40,7 +41,7 @@
     "babel-loader": "^8.2.2",
     "babel-polyfill": "^6.0.16",
     "html-webpack-plugin": "^4.5.0",
-    "webpack": "^5.45.1",
+    "webpack": "^5.47.1",
     "webpack-cli": "^4.7.2"
   }
 }
