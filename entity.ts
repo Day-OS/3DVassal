@@ -10,8 +10,8 @@ import { BufferGeometryUtils } from 'three/examples/jsm/utils/BufferGeometryUtil
 class Entity {
     geometryTypes = {GLTF:"gltf", DEFAULTCUBE:"default"};
     materialTypes = {MTL:"obj", DEFAULTMATERIAL:"default"};
-    Physic = false;
-    Mesh = false;
+    Physic;
+    Mesh;
     RotationOffset;
     constructor(scene, world, mass = 1, scale = {x: 1,y: 1,z:1}, geometry = "default", material = "default", rotationOffset = {x: 0,y: 0,z:0}){
         this.RotationOffset = rotationOffset;
@@ -26,8 +26,8 @@ class Entity {
             const dracoLoader = new DRACOLoader();
             dracoLoader.setDecoderPath( '/examples/js/libs/draco/' )
             gltf.setDRACOLoader(dracoLoader);
-            geometry = await gltf.loadAsync(geometry)
-            mesh = geometry.scene
+            var geometryobj = await gltf.loadAsync(geometry)
+            mesh = geometryobj.scene
 
             if (mesh.constructor.name == "Group"){
                 for (let index = 0; index < mesh.children.length; index++) {
@@ -40,31 +40,17 @@ class Entity {
                     
                 }
             }
-            console.log(mesh.geometry);
-            geometry = BufferGeometryUtils.mergeVertices(mesh.geometry)
-            console.log(geometry)
-            mesh.geometry = geometry
-            let position = geometry.attributes.position.array;  
-            let geomFaces = geometry.index.array; 
-            let normAttrib = geometry.attributes.normal;  
-            const points = [];  
-            const faces = []; 
-            const normals = []; 
-            for(var i = 0;i<position.length;i+=3){  
-              points.push(new CANNON.Vec3(position[i],position[i+1],position[i+2]));  
-            }  
-            for(var i = 0;i<geomFaces.length;i+=3){  
-              faces.push([geomFaces[i],geomFaces[i+1],geomFaces[i+2]]);  
-            }  
-            for ( let i=0 ; i<  normAttrib.count; i++ ) {
-                normals.push(new CANNON.Vec3(normAttrib.getX(i),normAttrib.getY(i),normAttrib.getZ(i)));
-            }
-            console.log(faces);
-            shape = new CANNON.ConvexPolyhedron({vertices:points,faces:faces, normals:normals}); 
-            console.log(shape);
+            //console.log(mesh.geometry);
+            var buffergeo = BufferGeometryUtils.mergeVertices(mesh.geometry)
+            //console.log(geometry)
+            mesh.geometry = buffergeo
+            
+            ////console.log(faces);
+            //shape = new CANNON.ConvexPolyhedron({vertices:points,faces:faces, normals:normals}); 
+            //console.log(shape);
 
             //Remove here after physics gets solved VVVVVVV
-            //shape = threeToCannon(mesh, {type: ShapeType.BOX}).shape
+            shape = threeToCannon(mesh, {type: ShapeType.HULL}).shape
         }
         else{
             geometry = notLoadedModel;

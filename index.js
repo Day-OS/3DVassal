@@ -4,7 +4,7 @@ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import CameraControls from 'camera-controls';
 import  cannonDebugger from 'cannon-es-debugger';
-import Entity from './entity.js'
+import Entity from './entity.ts'
 
 
 CameraControls.install({THREE: THREE})
