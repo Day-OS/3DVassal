@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
     stats:{errorDetails:true},
     target: "web",
-    entry: "/index.js",
+    entry: "/index.ts",
     output: {
         filename: "../public/main.js"
     },
@@ -16,13 +16,13 @@ module.exports = {
     module: {
         rules: [
             {
-            test: /\.js$/,
+            test: /\.(js|jsx|tsx|ts)$/,
             exclude: /(node_modules)/,
             use: {
                 loader: 'babel-loader',
                 options: {
-                    presets: ['@babel/preset-env'],
-                    plugins: ['@babel/plugin-transform-runtime']    
+                    presets: ['@babel/preset-env',"@babel/preset-typescript"],
+                    plugins: ['@babel/plugin-transform-runtime',"@babel/proposal-class-properties","@babel/proposal-object-rest-spread"]     
                 }
             }
             }
