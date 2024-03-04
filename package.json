@@ -30,7 +30,7 @@
     "three": "^0.141.0",
     "three-mesh-bvh": "^0.4.1",
     "url": "^0.11.0",
-    "yarn": "^1.22.10"
+    "yarn": "^1.22.13"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
